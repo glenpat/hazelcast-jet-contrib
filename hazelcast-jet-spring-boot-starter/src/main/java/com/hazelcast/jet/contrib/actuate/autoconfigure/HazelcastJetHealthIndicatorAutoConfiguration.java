@@ -19,7 +19,7 @@ package com.hazelcast.jet.contrib.actuate.autoconfigure;
 import com.hazelcast.jet.JetInstance;
 import com.hazelcast.jet.contrib.actuate.HazelcastJetHealthIndicator;
 import com.hazelcast.jet.contrib.autoconfigure.HazelcastJetAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthIndicatorConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -42,7 +42,7 @@ import java.util.Map;
 @ConditionalOnEnabledHealthIndicator("hazelcast.jet")
 @AutoConfigureAfter(HazelcastJetAutoConfiguration.class)
 public class HazelcastJetHealthIndicatorAutoConfiguration
-        extends CompositeHealthIndicatorConfiguration<HazelcastJetHealthIndicator, JetInstance> {
+    extends CompositeHealthContributorConfiguration<HazelcastJetHealthIndicator, JetInstance> {
 
     /**
      * Creates a {@link HealthIndicator} using the provided Hazelcast Jet
@@ -51,7 +51,7 @@ public class HazelcastJetHealthIndicatorAutoConfiguration
     @Bean
     @ConditionalOnMissingBean(name = {"hazelcastJetHealthIndicator", "hazelcastJetHealthContributor"})
     public HealthIndicator hazelcastJetHealthContributor(Map<String, JetInstance> jetInstances) {
-        return createHealthIndicator(jetInstances);
+        return (HealthIndicator) createComposite(jetInstances);
     }
 
 }
